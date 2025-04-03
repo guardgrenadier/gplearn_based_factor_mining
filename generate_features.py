@@ -1,3 +1,4 @@
+import os
 import pickle
 import matplotlib
 import numpy as np
@@ -16,7 +17,7 @@ pd.set_option('display.max_columns', 100)  # 设置最大显示列数
 pd.set_option('display.width', 1000)       # 控制台宽度（避免换行）
 
 
-file = 'zz1000_14-24.csv'
+file = 'data/zz1000_14-24.csv'
 df = pd.read_csv(file, encoding='gbk')
 print(df.head(30))
 
@@ -41,12 +42,6 @@ def create_ts_features(group):  # 假设T日已知当日信息，即收盘后
 df = df.groupby('stock_code', group_keys=False).apply(create_ts_features)
 print(df.head(30))
 print(df.tail(30))
-'''
-# 清洗无效数据，即每只股票的最后5天和前5天；保留前5天，之后生成因子时再删去,但第一天没有PCT_CHG要删去
-df = df.groupby('stock_code').apply(lambda group: group.iloc[1:-5]).reset_index(drop=True)
-df = df.sort_values(by=['stock_code', 'date'])
-print(df)
-'''
 
 
 # 检查无缺失值
@@ -62,6 +57,7 @@ for column in df.columns:
 
 
 # 保存数据
+os.makedirs('data', exist_ok=True)
 df.to_csv('zz1000_with_new_feat.csv', index=False, encoding='gbk')
 
 
